@@ -3,12 +3,38 @@ import Head from "next/head";
 import Link from "next/link";
 
 import { api } from "@/utils/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [prompt, setPrompt] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string>("");
   const runJob = api.job.runJob.useMutation();
+
+  const [status, updateStatus] = useState<string|null>(null);
+
+  useEffect(() => {
+    console.log("connecting...");
+    const eventSource = new EventSource("/api/sse");
+
+    eventSource.onopen = (e) => {
+      console.log("opened");
+      console.log(eventSource);
+    }
+
+    eventSource.onmessage = (e) => {
+      console.log("incoming data: ", e)
+      updateStatus(e.data);
+    }
+
+    eventSource.onerror = (error) => {
+      console.error("sse error: ", error);
+      eventSource.close();
+    }
+
+    return () => {
+      eventSource.close();
+    }
+  }, []);
 
   return (
     <>
@@ -35,6 +61,7 @@ export default function Home() {
               imageUrl,
             });
           }}>Submit</button>
+          <p>Current Status {status}</p>
         </div>
       </main>
     </>
