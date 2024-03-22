@@ -31,7 +31,6 @@ def upscale(samples, upscale_method, scale_by):
 def generate_image(control_image, prompt, negative_prompt, guidance_scale, controlnet_conditioning_scale, control_guidance_start, control_guidance_end, upscaler_strength, seed, sampler) -> Image:
     BASE_MODEL = "SG161222/Realistic_Vision_V5.1_noVAE"
 
-    print("Initializing model")
     vae = AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse", torch_dtype=torch.float16)
     controlnet = ControlNetModel.from_pretrained("monster-labs/control_v1p_sd15_qrcode_monster", torch_dtype=torch.float16)
     main_pipe = StableDiffusionControlNetPipeline.from_pretrained(
@@ -55,7 +54,6 @@ def generate_image(control_image, prompt, negative_prompt, guidance_scale, contr
     main_pipe.scheduler = SAMPLER_MAP[sampler](main_pipe.scheduler.config)
     generator = torch.Generator(device="cuda").manual_seed(seed)
 
-    print("generating...")
     out = main_pipe(
         prompt=prompt,
         negative_prompt=negative_prompt,
