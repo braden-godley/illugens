@@ -28,32 +28,34 @@ def upscale(samples, upscale_method, scale_by):
     s = torch.nn.functional.interpolate(samples["images"], size=(height, width), mode=upscale_method)
     return s
 
-BASE_MODEL = "SG161222/Realistic_Vision_V5.1_noVAE"
+def generate_image(control_image, prompt, negative_prompt, guidance_scale, controlnet_conditioning_scale, control_guidance_start, control_guidance_end, upscaler_strength, seed, sampler) -> Image:
+    BASE_MODEL = "SG161222/Realistic_Vision_V5.1_noVAE"
 
-vae = AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse", torch_dtype=torch.float16)
-controlnet = ControlNetModel.from_pretrained("monster-labs/control_v1p_sd15_qrcode_monster", torch_dtype=torch.float16)
-main_pipe = StableDiffusionControlNetPipeline.from_pretrained(
-    BASE_MODEL,
-    controlnet=controlnet,
-    vae=vae,
-    safety_checker=None,
-    torch_dtype=torch.float16,
-).to("cuda")
+    print("Initializing model")
+    vae = AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse", torch_dtype=torch.float16)
+    controlnet = ControlNetModel.from_pretrained("monster-labs/control_v1p_sd15_qrcode_monster", torch_dtype=torch.float16)
+    main_pipe = StableDiffusionControlNetPipeline.from_pretrained(
+        BASE_MODEL,
+        controlnet=controlnet,
+        vae=vae,
+        safety_checker=None,
+        torch_dtype=torch.float16,
+    ).to("cuda")
 
-image_pipe = StableDiffusionControlNetImg2ImgPipeline(**main_pipe.components)
+    image_pipe = StableDiffusionControlNetImg2ImgPipeline(**main_pipe.components)
 
-SAMPLER_MAP = {
-    "DPM++ Karras SDE": lambda config: DPMSolverMultistepScheduler.from_config(config, use_karras=True, algorithm_type="sde-dpmsolver++"),
-    "Euler": lambda config: EulerDiscreteScheduler.from_config(config),
-}
+    SAMPLER_MAP = {
+        "DPM++ Karras SDE": lambda config: DPMSolverMultistepScheduler.from_config(config, use_karras=True, algorithm_type="sde-dpmsolver++"),
+        "Euler": lambda config: EulerDiscreteScheduler.from_config(config),
+    }
 
-def generate_image(control_image, prompt, negative_prompt, guidance_scale, controlnet_conditioning_scale, control_guidance_start, control_guidance_end, upscaler_strength, seed, sampler):
     control_image_small = center_crop_resize(control_image)
     control_image_large = center_crop_resize(control_image, (1024, 1024))
 
     main_pipe.scheduler = SAMPLER_MAP[sampler](main_pipe.scheduler.config)
     generator = torch.Generator(device="cuda").manual_seed(seed)
 
+    print("generating...")
     out = main_pipe(
         prompt=prompt,
         negative_prompt=negative_prompt,
@@ -82,35 +84,3 @@ def generate_image(control_image, prompt, negative_prompt, guidance_scale, contr
     )
 
     return out_image["images"][0]
-
-# Hard-coded inputs
-control_image = Image.open("gnomed.jpg")
-prompt = "" #input("Prompt: ")
-negative_prompt = "photorealistic"
-guidance_scale = 10
-controlnet_conditioning_scale = 0.8
-control_guidance_start = 0
-control_guidance_end = 1
-upscaler_strength = 1
-sampler = "Euler"
-
-for i in range(1, 200):
-    seed = i
-    print(f"Generating gnomed #{seed}")
-
-    # Generate the image
-    output_image = generate_image(
-        control_image,
-        prompt,
-        negative_prompt,
-        guidance_scale,
-        controlnet_conditioning_scale,
-        control_guidance_start,
-        control_guidance_end,
-        upscaler_strength,
-        seed,
-        sampler
-    )
-
-    # Save the output image
-    output_image.save(f"gnomed5/gnomed-{i}.png")

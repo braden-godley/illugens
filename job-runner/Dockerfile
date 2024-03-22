@@ -1,11 +1,13 @@
-FROM python:3.8-alpine
+FROM python:3.8
 
 RUN mkdir /server
 
-COPY ./ /server/
-
 WORKDIR /server
+
+COPY ./requirements.txt /server/
 
 RUN pip install -r requirements.txt
 
-CMD [ "python3", "server.py" ]
+COPY ./server.py ./generator.py /server/
+
+CMD [ "python3", "-u", "server.py" ]
