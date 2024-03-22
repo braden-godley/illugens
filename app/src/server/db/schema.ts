@@ -20,22 +20,11 @@ import { type AdapterAccount } from "next-auth/adapters";
 export const createTable = pgTableCreator((name) => `app_${name}`);
 
 export const posts = createTable(
-  "post",
+  "generation",
   {
     id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
-    createdById: varchar("createdById", { length: 255 })
-      .notNull()
-      .references(() => users.id),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt"),
+    url: varchar("url", { length: 256 }),
   },
-  (example) => ({
-    createdByIdIdx: index("createdById_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
-  })
 );
 
 export const users = createTable("user", {
