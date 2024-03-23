@@ -105,7 +105,13 @@ def main():
         prompt = data["prompt"]
         control_image_url = data["control_image_url"]
 
-        progress_callback = lambda progress: r.publish(f"job_progress:{request_id}", progress)
+        def progress_callback(progress):
+            key = f"job_progress:{request_id}"
+            data = {
+                "type": "progress",
+                "progress": progress,
+            }
+            r.publish(key, json.dumps(data))
 
         print(data)
 

@@ -24,8 +24,6 @@ export default function Home() {
   useEffect(() => {
     if (currentEventSource === null) return;
     console.log("connecting...");
-    const eventSource = new EventSource("/api/sse");
-
     currentEventSource.onopen = (e) => {
       console.log("opened");
       console.log(currentEventSource);

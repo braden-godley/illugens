@@ -74,7 +74,7 @@ def generate_image(control_image, prompt, negative_prompt, guidance_scale, contr
     )
 
     def second_callback(pipeline, i, t, callback_kwargs):
-        progress_callback((i + 1) / 20 * 0.9 + 1)
+        progress_callback((i + 1) / 20 * 0.9 + 0.1)
         return callback_kwargs
 
     upscaled_latents = upscale(out, "nearest-exact", 2)
