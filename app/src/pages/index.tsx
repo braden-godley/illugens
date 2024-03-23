@@ -12,29 +12,29 @@ export default function Home() {
 
   const [status, updateStatus] = useState<string|null>(null);
 
-  useEffect(() => {
-    console.log("connecting...");
-    const eventSource = new EventSource("/api/sse");
+  // useEffect(() => {
+  //   console.log("connecting...");
+  //   const eventSource = new EventSource("/api/sse");
 
-    eventSource.onopen = (e) => {
-      console.log("opened");
-      console.log(eventSource);
-    }
+  //   eventSource.onopen = (e) => {
+  //     console.log("opened");
+  //     console.log(eventSource);
+  //   }
 
-    eventSource.onmessage = (e) => {
-      console.log("incoming data: ", e)
-      updateStatus(e.data);
-    }
+  //   eventSource.onmessage = (e) => {
+  //     console.log("incoming data: ", e)
+  //     updateStatus(e.data);
+  //   }
 
-    eventSource.onerror = (error) => {
-      console.error("sse error: ", error);
-      eventSource.close();
-    }
+  //   eventSource.onerror = (error) => {
+  //     console.error("sse error: ", error);
+  //     eventSource.close();
+  //   }
 
-    return () => {
-      eventSource.close();
-    }
-  }, []);
+  //   return () => {
+  //     eventSource.close();
+  //   }
+  // }, []);
 
   return (
     <>
