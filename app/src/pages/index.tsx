@@ -3,18 +3,44 @@ import Head from "next/head";
 import { api } from "@/utils/api";
 import { useEffect, useState } from "react";
 import ModelOutput from "@/components/ModelOutput";
+import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 
 export default function Home() {
+  const { editor, onReady } = useFabricJSEditor();
   const [prompt, setPrompt] = useState<string>("an underground habitat");
-  const [imageUrl, setImageUrl] = useState<string>(
-    "https://wallpapercave.com/wp/wp7798657.png",
-  );
-  const [requestId, setRequestId] = useState<string|null>(null);
-  const runJob = api.job.runJob.useMutation({
+  const [requestId, setRequestId] = useState<string | null>(null);
+  const runJobMutation = api.job.runJob.useMutation({
     onSuccess: (response) => {
       setRequestId(response.requestId);
     },
   });
+
+  const getImageData = () => {
+    const url = editor?.canvas.toDataURL({
+      format: "jpeg",
+    });
+    if (url === undefined) throw new Error("");
+    const data = url.split(",")[1] as string;
+
+    return data;
+  };
+
+  const addText = () => {
+    editor?.addText("Text");
+  }
+
+  const runJob = () => {
+    const imageData = getImageData();
+    
+    runJobMutation.mutate({
+      prompt,
+      imageData,
+    });
+  };
+
+  useEffect(() => {
+    editor?.canvas.setBackgroundColor("#fff", () => null);
+  }, [editor]);
 
   return (
     <>
@@ -37,28 +63,20 @@ export default function Home() {
               id="prompt"
             />
           </div>
-          <div>
-            <label htmlFor="imageUrl">Control Image URL:</label>
-            <input
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              className="w-full border border-black bg-white"
-              type="text"
-              name="imageUrl"
-              id="imageUrl"
-            />
-          </div>
           <button
-            onClick={() => {
-              console.log(imageUrl);
-              runJob.mutate({
-                prompt,
-                imageUrl,
-              });
-            }}
+            onClick={addText}
+          >
+            Add Text
+          </button>
+          <button
+            onClick={runJob}
           >
             Submit
           </button>
+          <FabricJSCanvas
+            className="mx-auto h-[500px] w-[500px] border border-black"
+            onReady={onReady}
+          />
           {requestId !== null && <ModelOutput requestId={requestId} />}
         </div>
       </main>

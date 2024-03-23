@@ -7,15 +7,18 @@ import json
 from random import randint
 import hmac
 from hashlib import sha256
+import base64
 
 # Max size is 1 MB for control images
 max_size = 1024 * 1024 * 1
 signature_key = "test"
 app_url = "http://localhost:3000"
 
-def handle_job(request_id: str, prompt: str, control_image_url: str, progress_callback):
+def handle_job(request_id: str, prompt: str, control_image_data: BytesIO, progress_callback):
+    print("Prompt:", prompt)
     print("Downloading image...")
-    control_image = download_image(control_image_url)
+    control_image = Image.open(control_image_data)
+    control_image.save("/output/control.png")
     print("Download complete.")
 
     print("Generating image...")
@@ -103,7 +106,8 @@ def main():
 
         request_id = data["request_id"]
         prompt = data["prompt"]
-        control_image_url = data["control_image_url"]
+        control_image_data = BytesIO()
+        control_image_data.write(base64.b64decode(str.encode(data["control_image_data"])))
 
         def progress_callback(progress):
             key = f"job_progress:{request_id}"
@@ -113,10 +117,8 @@ def main():
             }
             r.publish(key, json.dumps(data))
 
-        print(data)
-
         try:
-            handle_job(request_id, prompt, control_image_url, progress_callback)
+            handle_job(request_id, prompt, control_image_data, progress_callback)
         except Exception as e:
             print(f"Failed {str(e)}")
 

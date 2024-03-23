@@ -2,17 +2,18 @@ import { z } from "zod";
 import { createClient } from "redis";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { v4 } from "uuid";
+import fs from "fs";
 
 export const jobRouter = createTRPCRouter({
   runJob: publicProcedure
-    .input(z.object({ prompt: z.string().trim().max(1024), imageUrl: z.string().trim().url().max(1024) }))
-    .mutation(async ({ ctx, input: { prompt, imageUrl } }) => {
+    .input(z.object({ prompt: z.string().trim().max(1024), imageData: z.string() }))
+    .mutation(async ({ ctx, input: { prompt, imageData } }) => {
       const requestId = v4();
 
       const jobData = {
         request_id: requestId,
         prompt,
-        control_image_url: imageUrl
+        control_image_data: imageData,
       };
 
       const client = await createClient({

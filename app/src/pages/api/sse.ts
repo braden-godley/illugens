@@ -72,6 +72,7 @@ export default async function handler(
 
   const intervalId = setInterval(() => {
     if (!receivedData) {
+      sendData({ type: "failed" })
       res.status(200).end();
       return;
     }
