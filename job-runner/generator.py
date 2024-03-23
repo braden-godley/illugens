@@ -28,7 +28,7 @@ def upscale(samples, upscale_method, scale_by):
     s = torch.nn.functional.interpolate(samples["images"], size=(height, width), mode=upscale_method)
     return s
 
-def generate_image(control_image, prompt, negative_prompt, guidance_scale, controlnet_conditioning_scale, control_guidance_start, control_guidance_end, upscaler_strength, seed, sampler) -> Image:
+def generate_image(control_image, prompt, negative_prompt, guidance_scale, controlnet_conditioning_scale, control_guidance_start, control_guidance_end, upscaler_strength, seed, sampler, progress_callback) -> Image:
     BASE_MODEL = "SG161222/Realistic_Vision_V5.1_noVAE"
 
     vae = AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse", torch_dtype=torch.float16)
@@ -54,6 +54,10 @@ def generate_image(control_image, prompt, negative_prompt, guidance_scale, contr
     main_pipe.scheduler = SAMPLER_MAP[sampler](main_pipe.scheduler.config)
     generator = torch.Generator(device="cuda").manual_seed(seed)
 
+    def first_callback(pipeline, i, t, callback_kwargs):
+        progress_callback((i + 1) / 15 * 0.1)
+        return callback_kwargs
+
     out = main_pipe(
         prompt=prompt,
         negative_prompt=negative_prompt,
@@ -64,8 +68,15 @@ def generate_image(control_image, prompt, negative_prompt, guidance_scale, contr
         control_guidance_start=float(control_guidance_start),
         control_guidance_end=float(control_guidance_end),
         num_inference_steps=15,
-        output_type="latent"
+        output_type="latent",
+        # roughly 10% of the job is this task
+        callback_on_step_end=first_callback,
     )
+
+    def second_callback(pipeline, i, t, callback_kwargs):
+        progress_callback((i + 1) / 20 * 0.9 + 1)
+        return callback_kwargs
+
     upscaled_latents = upscale(out, "nearest-exact", 2)
     out_image = image_pipe(
         prompt=prompt,
@@ -78,7 +89,12 @@ def generate_image(control_image, prompt, negative_prompt, guidance_scale, contr
         strength=upscaler_strength,
         control_guidance_start=float(control_guidance_start),
         control_guidance_end=float(control_guidance_end),
-        controlnet_conditioning_scale=float(controlnet_conditioning_scale)
+        controlnet_conditioning_scale=float(controlnet_conditioning_scale),
+        # roughly 90% of the job is this task
+        callback_on_step_end=second_callback,
     )
+
+    # 100% finished
+    progress_callback(1)
 
     return out_image["images"][0]

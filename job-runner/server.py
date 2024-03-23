@@ -13,7 +13,7 @@ max_size = 1024 * 1024 * 1
 signature_key = "test"
 app_url = "http://localhost:3000"
 
-def handle_job(request_id: str, prompt: str, control_image_url: str):
+def handle_job(request_id: str, prompt: str, control_image_url: str, progress_callback):
     print("Downloading image...")
     control_image = download_image(control_image_url)
     print("Download complete.")
@@ -29,7 +29,8 @@ def handle_job(request_id: str, prompt: str, control_image_url: str):
         control_guidance_end=1,
         upscaler_strength=1,
         sampler="Euler",
-        seed=randint(1, 9999)
+        seed=randint(1, 9999),
+        progress_callback=progress_callback
     )
     print("Finished generation.")
 
@@ -52,7 +53,6 @@ def handle_job(request_id: str, prompt: str, control_image_url: str):
     else:
         print(f"Failed to send! Status: {response.status_code}")
         print(response.content)
-
 
 
 def generate_hmac(data_buffer: BytesIO, signature_key: str) -> str:
@@ -105,10 +105,12 @@ def main():
         prompt = data["prompt"]
         control_image_url = data["control_image_url"]
 
+        progress_callback = lambda progress: r.publish(f"job_progress:{request_id}", progress)
+
         print(data)
 
         try:
-            handle_job(request_id, prompt, control_image_url)
+            handle_job(request_id, prompt, control_image_url, progress_callback)
         except Exception as e:
             print(f"Failed {str(e)}")
 

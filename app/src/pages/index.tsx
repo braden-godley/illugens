@@ -8,33 +8,43 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [prompt, setPrompt] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string>("");
-  const runJob = api.job.runJob.useMutation();
+  const [currentEventSource, setCurrentEventSource] = useState<EventSource|null>(null);
+  const runJob = api.job.runJob.useMutation({
+    onSuccess: (response) => {
+      const requestId = response.requestId;
 
-  const [status, updateStatus] = useState<string|null>(null);
+      const eventSource = new EventSource(`/api/sse?requestId=${requestId}`);
 
-  // useEffect(() => {
-  //   console.log("connecting...");
-  //   const eventSource = new EventSource("/api/sse");
+      setCurrentEventSource(eventSource);
+    },
+  });
 
-  //   eventSource.onopen = (e) => {
-  //     console.log("opened");
-  //     console.log(eventSource);
-  //   }
+  const [status, updateStatus] = useState<string | null>(null);
 
-  //   eventSource.onmessage = (e) => {
-  //     console.log("incoming data: ", e)
-  //     updateStatus(e.data);
-  //   }
+  useEffect(() => {
+    if (currentEventSource === null) return;
+    console.log("connecting...");
+    const eventSource = new EventSource("/api/sse");
 
-  //   eventSource.onerror = (error) => {
-  //     console.error("sse error: ", error);
-  //     eventSource.close();
-  //   }
+    currentEventSource.onopen = (e) => {
+      console.log("opened");
+      console.log(currentEventSource);
+    }
 
-  //   return () => {
-  //     eventSource.close();
-  //   }
-  // }, []);
+    currentEventSource.onmessage = (e) => {
+      console.log("incoming data: ", e)
+      updateStatus(e.data);
+    }
+
+    currentEventSource.onerror = (error) => {
+      console.error("sse error: ", error);
+      currentEventSource.close();
+    }
+
+    return () => {
+      currentEventSource.close();
+    }
+  }, [currentEventSource]);
 
   return (
     <>
@@ -48,19 +58,37 @@ export default function Home() {
           <h1>Generate an illusion</h1>
           <div>
             <label htmlFor="prompt">Prompt:</label>
-            <input value={prompt} onChange={(e) => setPrompt(e.target.value)} className="bg-white border w-full border-black" type="text" name="prompt" id="prompt"/>
+            <input
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className="w-full border border-black bg-white"
+              type="text"
+              name="prompt"
+              id="prompt"
+            />
           </div>
           <div>
             <label htmlFor="imageUrl">Control Image URL:</label>
-            <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="bg-white border w-full border-black" type="text" name="imageUrl" id="imageUrl"/>
+            <input
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              className="w-full border border-black bg-white"
+              type="text"
+              name="imageUrl"
+              id="imageUrl"
+            />
           </div>
-          <button onClick={() => {
-            console.log(imageUrl)
-            runJob.mutate({
-              prompt,
-              imageUrl,
-            });
-          }}>Submit</button>
+          <button
+            onClick={() => {
+              console.log(imageUrl);
+              runJob.mutate({
+                prompt,
+                imageUrl,
+              });
+            }}
+          >
+            Submit
+          </button>
           <p>Current Status {status}</p>
         </div>
       </main>

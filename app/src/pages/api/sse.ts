@@ -1,6 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import z from "zod";
+
+const requestSchema = z.object({
+  requestId: z.string().uuid(),
+});
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (requestSchema.safeParse(req.query).success === false) {
+    res.status(400).end();
+    return;
+  }
+
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",

@@ -5,7 +5,7 @@ import { v4 } from "uuid";
 
 export const jobRouter = createTRPCRouter({
   runJob: publicProcedure
-    .input(z.object({ prompt: z.string().trim(), imageUrl: z.string().trim().url() }))
+    .input(z.object({ prompt: z.string().trim().max(1024), imageUrl: z.string().trim().url().max(1024) }))
     .mutation(async ({ ctx, input: { prompt, imageUrl } }) => {
       const requestId = v4();
 
@@ -22,5 +22,9 @@ export const jobRouter = createTRPCRouter({
       await client.connect();
 
       await client.rPush("job-queue", JSON.stringify(jobData));
+
+      return {
+        requestId
+      };
     }),
 });
