@@ -1,48 +1,20 @@
-import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-import Link from "next/link";
 
 import { api } from "@/utils/api";
 import { useEffect, useState } from "react";
+import ModelOutput from "@/components/ModelOutput";
 
 export default function Home() {
-  const [prompt, setPrompt] = useState<string>("");
-  const [imageUrl, setImageUrl] = useState<string>("");
-  const [currentEventSource, setCurrentEventSource] = useState<EventSource|null>(null);
+  const [prompt, setPrompt] = useState<string>("an underground habitat");
+  const [imageUrl, setImageUrl] = useState<string>(
+    "https://wallpapercave.com/wp/wp7798657.png",
+  );
+  const [requestId, setRequestId] = useState<string|null>(null);
   const runJob = api.job.runJob.useMutation({
     onSuccess: (response) => {
-      const requestId = response.requestId;
-
-      const eventSource = new EventSource(`/api/sse?requestId=${requestId}`);
-
-      setCurrentEventSource(eventSource);
+      setRequestId(response.requestId);
     },
   });
-
-  const [status, updateStatus] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (currentEventSource === null) return;
-    console.log("connecting...");
-    currentEventSource.onopen = (e) => {
-      console.log("opened");
-      console.log(currentEventSource);
-    }
-
-    currentEventSource.onmessage = (e) => {
-      console.log("incoming data: ", e)
-      updateStatus(e.data);
-    }
-
-    currentEventSource.onerror = (error) => {
-      console.error("sse error: ", error);
-      currentEventSource.close();
-    }
-
-    return () => {
-      currentEventSource.close();
-    }
-  }, [currentEventSource]);
 
   return (
     <>
@@ -87,7 +59,7 @@ export default function Home() {
           >
             Submit
           </button>
-          <p>Current Status {status}</p>
+          {requestId !== null && <ModelOutput requestId={requestId} />}
         </div>
       </main>
     </>

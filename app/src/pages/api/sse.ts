@@ -10,11 +10,20 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    "Content-Encoding": "none",
+    Connection: "keep-alive",
+  });
+
   if (requestSchema.safeParse(req.query).success === false) {
     console.log(req.query)
     res.status(400).end();
     return;
   }
+
+  console.log("Writing headers");
 
   const { requestId } = req.query;
 
@@ -47,19 +56,12 @@ export default async function handler(
     }
   });
 
-  console.log("Writing headers");
-  res.writeHead(200, {
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-    "Content-Encoding": "none",
-    Connection: "keep-alive",
-  });
 
   const sendData = (data: object) => {
     console.log("Sending data", data);
     const jsonData = JSON.stringify(data);
     
-    res.write(`${jsonData}\n\n`, (err) => {
+    res.write(`data: ${jsonData}\n\n`, (err) => {
       if (err) {
         console.log("error sending!");
       }
