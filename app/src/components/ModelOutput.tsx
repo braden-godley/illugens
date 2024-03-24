@@ -22,10 +22,22 @@ export default function ModelOutput({ requestId }: { requestId: string }) {
   }, [requestId]);
 
   if (progress !== 1) {
-    return <p>Progress: {Math.floor(progress * 100)}%</p>
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p>Progress: {Math.floor(progress * 100)}%</p>
+      </div>
+    );
   }
 
-  return <img src={`/api/view-image?requestId=${requestId}`} width="400" height="400"/>
+  return (
+    <div className="flex h-full items-center justify-center">
+      <img
+        src={`/api/view-image?requestId=${requestId}`}
+        width="500"
+        height="500"
+      />
+    </div>
+  );
 }
 
 type JobEvent =
