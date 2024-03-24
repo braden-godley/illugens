@@ -22,7 +22,7 @@ export const jobRouter = createTRPCRouter({
 
       await client.connect();
 
-      await client.rPush("job-queue", JSON.stringify(jobData));
+      await client.lPush("job-queue", JSON.stringify(jobData));
 
       return {
         requestId

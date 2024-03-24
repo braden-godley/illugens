@@ -72,6 +72,12 @@ export default function Home() {
                   id="prompt"
                 />
               </div>
+              <div className="my-4">
+                <FabricJSCanvas
+                  className="mx-auto h-[500px] w-full border border-black md:w-[500px]"
+                  onReady={onReady}
+                />
+              </div>
               <button
                 onClick={addText}
                 className="focus:shadow-outline mr-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
@@ -84,12 +90,6 @@ export default function Home() {
               >
                 Submit
               </button>
-              <div className="mt-4">
-                <FabricJSCanvas
-                  className="mx-auto h-[500px] w-full border border-black md:w-[500px]"
-                  onReady={onReady}
-                />
-              </div>
             </div>
             <div>
               {requestId !== null && <ModelOutput requestId={requestId} />}

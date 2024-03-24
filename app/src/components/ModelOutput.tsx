@@ -24,7 +24,7 @@ export default function ModelOutput({ requestId }: { requestId: string }) {
   if (progress !== 1) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p>Progress: {Math.floor(progress * 100)}%</p>
+        <p>Progress: {progress !== 0 ? `${Math.floor(progress * 100)}%` : "Not started"}</p>
       </div>
     );
   }

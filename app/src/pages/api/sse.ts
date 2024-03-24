@@ -71,11 +71,11 @@ export default async function handler(
   sendData({ type: "heartbeat" });
 
   const intervalId = setInterval(() => {
-    if (!receivedData) {
-      sendData({ type: "failed" })
-      res.status(200).end();
-      return;
-    }
+    // if (!receivedData) {
+    //   sendData({ type: "failed" })
+    //   res.status(200).end();
+    //   return;
+    // }
     sendData({ type: "heartbeat" });
   }, 5000);
 
