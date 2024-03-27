@@ -1,0 +1,1 @@
+ALTER TABLE "app_generation" ADD COLUMN "prompt" varchar(1024) DEFAULT '' NOT NULL;

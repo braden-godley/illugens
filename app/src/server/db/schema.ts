@@ -28,6 +28,7 @@ export const generation = createTable(
   {
     id: serial("id").primaryKey(),
     requestId: uuid("requestId").notNull().unique(),
+    prompt: varchar("prompt", { length: 1024 }).notNull().default(""),
     status: generationStatus("status").notNull(),
   },
 );

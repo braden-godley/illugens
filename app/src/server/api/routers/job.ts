@@ -13,6 +13,7 @@ export const jobRouter = createTRPCRouter({
 
       await ctx.db.insert(generation).values({
         requestId,
+        prompt,
         status: "pending",
       });
 
