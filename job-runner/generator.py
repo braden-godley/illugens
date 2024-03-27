@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import torch
-from random import randint
 from PIL import Image
 from diffusers import (
     AutoencoderKL,

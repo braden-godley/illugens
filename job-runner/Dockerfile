@@ -10,6 +10,4 @@ RUN pip install -r requirements.txt
 
 COPY ./server.py ./generator.py /server/
 
-RUN mkdir /output
-
 CMD [ "python3", "-u", "server.py" ]
