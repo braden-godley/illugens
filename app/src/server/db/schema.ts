@@ -2,11 +2,13 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   integer,
+  pgEnum,
   pgTableCreator,
   primaryKey,
   serial,
   text,
   timestamp,
+  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
@@ -19,11 +21,14 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `app_${name}`);
 
-export const posts = createTable(
+export const generationStatus = pgEnum("status", ["pending", "in_progress", "completed"]);
+
+export const generation = createTable(
   "generation",
   {
     id: serial("id").primaryKey(),
-    url: varchar("url", { length: 256 }),
+    requestId: uuid("requestId").notNull().unique(),
+    status: generationStatus("status").notNull(),
   },
 );
 
