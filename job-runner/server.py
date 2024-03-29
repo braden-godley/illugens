@@ -44,7 +44,7 @@ def handle_job(request_id: str, prompt: str, control_image_data: BytesIO, progre
     print(f"Generated signature: {signature}")
 
     print("Sending to API...")
-    url = f"{app_url}/api/job-completed?requestId={request_id}&signature={signature}"
+    url = f"{app_url}/api/generation-completed?requestId={request_id}&signature={signature}"
     image_bytes.seek(0)
     response = requests.post(
         url=url,

@@ -1,15 +1,16 @@
 import Head from "next/head";
 
 import { api } from "@/utils/api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ModelOutput from "@/components/ModelOutput";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
+import Gallery from "@/components/Gallery";
 
 export default function Home() {
   const { editor, onReady } = useFabricJSEditor();
   const [prompt, setPrompt] = useState<string>("an underground habitat");
   const [requestId, setRequestId] = useState<string | null>(null);
-  const runJobMutation = api.job.runJob.useMutation({
+  const runJobMutation = api.generation.runGeneration.useMutation({
     onSuccess: (response) => {
       setRequestId(response.requestId);
     },
@@ -37,10 +38,6 @@ export default function Home() {
       imageData,
     });
   };
-
-  useEffect(() => {
-    editor?.canvas.setBackgroundColor("#fff", () => null);
-  }, [editor]);
 
   return (
     <>
@@ -95,6 +92,7 @@ export default function Home() {
               {requestId !== null && <ModelOutput requestId={requestId} />}
             </div>
           </div>
+          <Gallery />
         </div>
       </main>
     </>

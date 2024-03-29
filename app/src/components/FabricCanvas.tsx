@@ -16,13 +16,17 @@ const FabricCanvas = () => {
     return data;
   };
 
+  useEffect(() => {
+    editor?.canvas.setBackgroundColor("#fff", () => null);
+  }, [editor?.canvas]);
+
   return (
     <div>
       <button onClick={addText}>Add text</button>
       <button onClick={toImage}>To image</button>
-      <div className="">
+      <div>
         <FabricJSCanvas
-          className="mx-auto h-[800px] w-[800px] border border-black"
+          className="mx-auto h-[800px] w-[800px] bg-white border border-black"
           onReady={onReady}
         />
       </div>

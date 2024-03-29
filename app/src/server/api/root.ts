@@ -1,4 +1,4 @@
-import { jobRouter } from "@/server/api/routers/job";
+import { generationRouter } from "@/server/api/routers/generation";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -7,7 +7,7 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  job: jobRouter,
+  generation: generationRouter,
 });
 
 // export type definition of API

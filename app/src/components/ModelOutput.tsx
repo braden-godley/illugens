@@ -1,6 +1,8 @@
+import { api } from "@/utils/api";
 import { useEffect, useState } from "react";
 
 export default function ModelOutput({ requestId }: { requestId: string }) {
+  const utils = api.useUtils();
   const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
@@ -9,7 +11,12 @@ export default function ModelOutput({ requestId }: { requestId: string }) {
 
     eventSource.onmessage = (e) => {
       const data = JSON.parse(e.data) as JobEvent;
-      if (data.type === "progress") setProgress(data.progress);
+      if (data.type === "progress") {
+        setProgress(data.progress);
+        if (data.progress === 1) {
+          setTimeout(() => utils.generation.getGallery.invalidate(), 500);
+        }
+      }
     };
 
     eventSource.onerror = (error) => {
@@ -32,7 +39,7 @@ export default function ModelOutput({ requestId }: { requestId: string }) {
   return (
     <div className="flex h-full items-center justify-center">
       <img
-        src={`/api/view-image?requestId=${requestId}`}
+        src={`/api/view-image?requestId=${requestId}&size=full`}
         width="500"
         height="500"
       />

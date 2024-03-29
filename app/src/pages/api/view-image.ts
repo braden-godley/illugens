@@ -2,9 +2,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import z from "zod";
 import path from "path";
 import fs from "fs";
+import sharp from "sharp";
 
 const requestSchema = z.object({
   requestId: z.string().uuid(),
+  size: z.enum(["thumbnail", "full"]),
 });
 
 const ROOT_DIR = "/home/bgodley/git/illusion-site/app";
@@ -20,7 +22,7 @@ export default async function handler(
     return;
   }
 
-  const { requestId } = req.query;
+  const { requestId, size } = req.query as z.infer<typeof requestSchema>;
 
   const fileName = `${requestId}.png`;
 
@@ -45,17 +47,25 @@ export default async function handler(
     res.writeHead(200, {
       "Content-Type": "image/png",
     });
+    
+    fs.readFile(filePath, async (err, data) => {
+      if (err) {
+        res.status(500).end();
+        return;
+      }
+      let output: Buffer = data;
+      if (size === "thumbnail") {
+        output = await sharp(data)
+          .resize({
+            width: 400,
+            height: 400,
+            fit: "cover"
+          })
+          .toBuffer();
+      }
 
-    const stream = fs.createReadStream(filePath);
-
-    stream.on("data", (chunk) => {
-      res.write(chunk);
-    });
-
-    stream.on("end", () => {
-      stream.close();
-      res.status(200).end();
-    });
+      res.status(200).end(output);
+    })
   })
   .catch(() => {
     res.status(404).end("file not found!");
