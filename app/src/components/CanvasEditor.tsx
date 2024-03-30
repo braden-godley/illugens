@@ -25,13 +25,19 @@ const CanvasEditor = ({
     setEditor(editor);
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // TODO: Make it ignore this if you're currently editing a text item
+      if (document.activeElement !== document.body) return;
       if (
         e.key === "Delete" ||
         e.key === "Backspace" ||
         (e.ctrlKey && e.key === "x")
       ) {
         e.preventDefault();
-        editor?.deleteSelected();
+        const selectedItems = editor?.canvas.getActiveObjects();
+        if (selectedItems === undefined) return;
+        for (const selectedItem of selectedItems) {
+          editor?.canvas.remove(selectedItem);
+        }
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -43,9 +49,9 @@ const CanvasEditor = ({
 
   const addText = () => {
     const text = new fabric.IText("Text", {
-      width: 300,
-      height: 300,
       fontFamily: "sans-serif",
+      scaleX: 3,
+      scaleY: 3,
     });
     editor?.canvas.add(text);
   };
