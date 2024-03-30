@@ -8,7 +8,7 @@ import Gallery from "@/components/Gallery";
 import CanvasEditor from "@/components/CanvasEditor";
 
 export default function Home() {
-  const [prompt, setPrompt] = useState<string>("an underground habitat");
+  const [prompt, setPrompt] = useState<string>("bagel world");
   const [requestId, setRequestId] = useState<string | null>(null);
   const [editor, setEditor] = useState<FabricJSEditor | undefined>(undefined);
   const runJobMutation = api.generation.runGeneration.useMutation({

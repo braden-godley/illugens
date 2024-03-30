@@ -21,7 +21,7 @@ const Gallery = () => {
       <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} numPages={numPages} />
       <div className="mt-2 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {galleryQuery.data?.results.map((generation) => (
-          <div className="rounded-md border bg-white shadow-md">
+          <div key={generation.requestId} className="rounded-md border bg-white shadow-md">
             <img
               className="aspect-square w-full rounded-t-md"
               src={`/api/view-image?requestId=${generation.requestId}&size=thumbnail`}
