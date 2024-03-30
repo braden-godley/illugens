@@ -51,32 +51,28 @@ const Pagination = ({
       >
         &lt;
       </button>
-      {pages.map((page) => {
-        if (typeof page === "number") {
-          return (
-            <button
-              key={page}
-              className={`min-w-8 border px-2 py-1 ${page === currentPage ? "bg-grey" : "bg-white"}`}
-              onClick={() => setCurrentPage(page)}
-              disabled={page === currentPage}
-              aria-label={`Go to page ${page + 1}`}
-            >
-              {page + 1}
-            </button>
-          );
-        } else {
-          return (
-            <button
-              key={page}
-              className={`bg-grey min-w-8 border px-2 py-1`}
-              disabled={true}
-              aria-label={`Go to page ${page + 1}`}
-            >
-              ...
-            </button>
-          );
-        }
-      })}
+      {pages.map((page) =>
+        typeof page === "number" ? (
+          <button
+            key={page}
+            className={`min-w-8 border px-2 py-1 ${page === currentPage ? "bg-grey" : "bg-white"}`}
+            onClick={() => setCurrentPage(page)}
+            disabled={page === currentPage}
+            aria-label={`Go to page ${page + 1}`}
+          >
+            {page + 1}
+          </button>
+        ) : (
+          <button
+            key={page}
+            className={`bg-grey min-w-8 border px-2 py-1`}
+            disabled={true}
+            aria-label={`Go to page ${page + 1}`}
+          >
+            ...
+          </button>
+        ),
+      )}
       <button
         className={`rounded-r-md border px-3 py-1 ${currentPage === numPages - 1 ? "bg-grey" : "bg-white"}`}
         onClick={() =>
