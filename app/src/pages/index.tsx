@@ -1,15 +1,16 @@
 import Head from "next/head";
 
 import { api } from "@/utils/api";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ModelOutput from "@/components/ModelOutput";
-import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
+import { FabricJSEditor } from "fabricjs-react";
 import Gallery from "@/components/Gallery";
+import CanvasEditor from "@/components/CanvasEditor";
 
 export default function Home() {
-  const { editor, onReady } = useFabricJSEditor();
   const [prompt, setPrompt] = useState<string>("an underground habitat");
   const [requestId, setRequestId] = useState<string | null>(null);
+  const [editor, setEditor] = useState<FabricJSEditor | undefined>(undefined);
   const runJobMutation = api.generation.runGeneration.useMutation({
     onSuccess: (response) => {
       setRequestId(response.requestId);
@@ -24,10 +25,6 @@ export default function Home() {
     const data = url.split(",")[1] as string;
 
     return data;
-  };
-
-  const addText = () => {
-    editor?.addText("Text");
   };
 
   const runJob = () => {
@@ -69,24 +66,7 @@ export default function Home() {
                   id="prompt"
                 />
               </div>
-              <div className="my-4">
-                <FabricJSCanvas
-                  className="mx-auto h-[500px] w-full border border-black md:w-[500px]"
-                  onReady={onReady}
-                />
-              </div>
-              <button
-                onClick={addText}
-                className="focus:shadow-outline mr-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-              >
-                Add Text
-              </button>
-              <button
-                onClick={runJob}
-                className="focus:shadow-outline rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700 focus:outline-none"
-              >
-                Submit
-              </button>
+              <CanvasEditor setEditor={(editor) => setEditor(editor)} onRunJob={runJob} />
             </div>
             <div>
               {requestId !== null && <ModelOutput requestId={requestId} />}
