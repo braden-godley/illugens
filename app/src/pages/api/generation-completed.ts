@@ -80,14 +80,14 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       }
       console.log("Saved file!");
 
-      await db.update(generation)
+      await db
+        .update(generation)
         .set({
-          status: "completed"
+          status: "completed",
         })
         .where(eq(generation.requestId, requestId));
 
       res.status(200).end("Saved");
     });
-
   });
 }
