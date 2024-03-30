@@ -48,6 +48,10 @@ const CanvasEditor = ({
         img.onload = function () {
           console.log("image loaded");
           const fabricImage = new fabric.Image(img)
+          const baseWidth = 500;
+          const width = fabricImage.width as number;
+          fabricImage.scaleX = baseWidth/width;
+          fabricImage.scaleY = baseWidth/width;
           editor?.canvas.add(fabricImage);
         };
         if (e.target?.result) {
