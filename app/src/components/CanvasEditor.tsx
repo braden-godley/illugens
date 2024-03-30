@@ -69,31 +69,33 @@ const CanvasEditor = ({
         className="mx-auto aspect-square w-full border border-black"
         onReady={onReady}
       />
-      <button
-        onClick={addText}
-        className="focus:shadow-outline mr-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-      >
-        Add Text
-      </button>
-      <button
-        onClick={addImage}
-        className="focus:shadow-outline mr-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-      >
-        Add Image
-      </button>
-      <input
-        ref={uploadRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={onImageUploaded}
-      />
-      <button
-        onClick={onRunJob}
-        className="focus:shadow-outline rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700 focus:outline-none"
-      >
-        Submit
-      </button>
+      <div className="mt-2">
+        <button
+          onClick={addText}
+          className="focus:shadow-outline mr-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+        >
+          Add Text
+        </button>
+        <button
+          onClick={addImage}
+          className="focus:shadow-outline mr-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+        >
+          Add Image
+        </button>
+        <input
+          ref={uploadRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={onImageUploaded}
+        />
+        <button
+          onClick={onRunJob}
+          className="focus:shadow-outline rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700 focus:outline-none"
+        >
+          Submit
+        </button>
+      </div>
     </div>
   );
 };
