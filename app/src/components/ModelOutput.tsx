@@ -30,9 +30,7 @@ export default function ModelOutput({ requestId }: { requestId: string }) {
   }, [requestId]);
 
   if (progress !== 1) {
-    return (
-      <ProgressBar progress={progress} />
-    );
+    return <ProgressBar progress={progress} />;
   }
 
   return (

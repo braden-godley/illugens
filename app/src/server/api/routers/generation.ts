@@ -9,7 +9,9 @@ import { copiedTextStyle } from "fabric/fabric-impl";
 
 export const generationRouter = createTRPCRouter({
   runGeneration: publicProcedure
-    .input(z.object({ prompt: z.string().trim().max(1024), imageData: z.string() }))
+    .input(
+      z.object({ prompt: z.string().trim().max(1024), imageData: z.string() }),
+    )
     .mutation(async ({ ctx, input: { prompt, imageData } }) => {
       const requestId = v4();
 
@@ -26,7 +28,7 @@ export const generationRouter = createTRPCRouter({
       };
 
       const client = await createClient({
-        url: "redis://localhost:6379"
+        url: "redis://localhost:6379",
       });
 
       await client.connect();
@@ -34,31 +36,35 @@ export const generationRouter = createTRPCRouter({
       await client.lPush("job-queue", JSON.stringify(generationJobData));
 
       return {
-        requestId
+        requestId,
       };
     }),
-  
+
   getGallery: publicProcedure
-    .input(z.object({
-      page: z.number().int().min(0).max(1000)
-    }))
+    .input(
+      z.object({
+        page: z.number().int().min(0).max(1000),
+      }),
+    )
     .query(async ({ ctx, input: { page } }) => {
       const PAGE_SIZE = 8;
 
-      const results = await ctx.db.select()
+      const results = await ctx.db
+        .select()
         .from(generation)
         .where(eq(generation.status, "completed"))
         .orderBy(desc(generation.id))
         .limit(PAGE_SIZE)
         .offset(PAGE_SIZE * page);
 
-      const numPages = await ctx.db.select({ count: count() })
+      const numPages = await ctx.db
+        .select({ count: count() })
         .from(generation)
         .where(eq(generation.status, "completed"));
 
       return {
         results,
-        numPages: Math.ceil((numPages[0]?.count ?? 1) / PAGE_SIZE)
-      }
+        numPages: Math.ceil((numPages[0]?.count ?? 1) / PAGE_SIZE),
+      };
     }),
 });

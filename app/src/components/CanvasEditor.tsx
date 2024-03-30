@@ -47,15 +47,15 @@ const CanvasEditor = ({
         const img = new Image();
         img.onload = function () {
           console.log("image loaded");
-          const fabricImage = new fabric.Image(img)
+          const fabricImage = new fabric.Image(img);
           const baseWidth = 500;
           const width = fabricImage.width as number;
-          fabricImage.scaleX = baseWidth/width;
-          fabricImage.scaleY = baseWidth/width;
+          fabricImage.scaleX = baseWidth / width;
+          fabricImage.scaleY = baseWidth / width;
           editor?.canvas.add(fabricImage);
         };
         if (e.target?.result) {
-          console.log("e.target.result:", e.target.result)
+          console.log("e.target.result:", e.target.result);
           img.src = e.target.result as string;
         }
       };

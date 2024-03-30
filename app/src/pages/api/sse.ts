@@ -18,7 +18,7 @@ export default async function handler(
   });
 
   if (requestSchema.safeParse(req.query).success === false) {
-    console.log(req.query)
+    console.log(req.query);
     res.status(400).end();
     return;
   }
@@ -56,11 +56,10 @@ export default async function handler(
     }
   });
 
-
   const sendData = (data: object) => {
     console.log("Sending data", data);
     const jsonData = JSON.stringify(data);
-    
+
     res.write(`data: ${jsonData}\n\n`, (err) => {
       if (err) {
         console.log("error sending!");

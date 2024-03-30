@@ -66,7 +66,10 @@ export default function Home() {
                   id="prompt"
                 />
               </div>
-              <CanvasEditor setEditor={(editor) => setEditor(editor)} onRunJob={runJob} />
+              <CanvasEditor
+                setEditor={(editor) => setEditor(editor)}
+                onRunJob={runJob}
+              />
             </div>
             <div>
               {requestId !== null && <ModelOutput requestId={requestId} />}

@@ -43,31 +43,32 @@ export default async function handler(
     resolve();
   });
 
-  waitForFile.then(() => {
-    res.writeHead(200, {
-      "Content-Type": "image/png",
-    });
-    
-    fs.readFile(filePath, async (err, data) => {
-      if (err) {
-        res.status(500).end();
-        return;
-      }
-      let output: Buffer = data;
-      if (size === "thumbnail") {
-        output = await sharp(data)
-          .resize({
-            width: 400,
-            height: 400,
-            fit: "cover"
-          })
-          .toBuffer();
-      }
+  waitForFile
+    .then(() => {
+      res.writeHead(200, {
+        "Content-Type": "image/png",
+      });
 
-      res.status(200).end(output);
+      fs.readFile(filePath, async (err, data) => {
+        if (err) {
+          res.status(500).end();
+          return;
+        }
+        let output: Buffer = data;
+        if (size === "thumbnail") {
+          output = await sharp(data)
+            .resize({
+              width: 400,
+              height: 400,
+              fit: "cover",
+            })
+            .toBuffer();
+        }
+
+        res.status(200).end(output);
+      });
     })
-  })
-  .catch(() => {
-    res.status(404).end("file not found!");
-  });
+    .catch(() => {
+      res.status(404).end("file not found!");
+    });
 }
