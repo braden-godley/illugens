@@ -23,10 +23,31 @@ const CanvasEditor = ({
 
   useEffect(() => {
     setEditor(editor);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === "Delete" ||
+        e.key === "Backspace" ||
+        (e.ctrlKey && e.key === "x")
+      ) {
+        e.preventDefault();
+        editor?.deleteSelected();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [editor]);
 
   const addText = () => {
-    editor?.addText("Text");
+    const text = new fabric.IText("Text", {
+      width: 300,
+      height: 300,
+      fontFamily: "sans-serif",
+    });
+    editor?.canvas.add(text);
   };
 
   const addImage = () => {
