@@ -8,11 +8,13 @@ from random import randint
 import hmac
 from hashlib import sha256
 import base64
+from os import getenv
 
 # Max size is 1 MB for control images
-max_size = 1024 * 1024 * 1
-signature_key = "test"
-app_url = "http://localhost:3000"
+MAX_SIZE = 1024 * 1024 * 1
+SIGNATURE_KEY = getenv("JOB_RUNNER_SIGNATURE_KEY") or ""
+APP_URL = getenv("APP_URL") or ""
+REDIS_URL = getenv("REDIS_URL") or ""
 
 def handle_job(request_id: str, prompt: str, control_image_data: BytesIO, progress_callback):
     print("Prompt:", prompt)
@@ -40,11 +42,11 @@ def handle_job(request_id: str, prompt: str, control_image_data: BytesIO, progre
     image_bytes = BytesIO()   
     output_image.save(image_bytes, format="png")
 
-    signature = generate_hmac(image_bytes, signature_key)
+    signature = generate_hmac(image_bytes, SIGNATURE_KEY)
     print(f"Generated signature: {signature}")
 
     print("Sending to API...")
-    url = f"{app_url}/api/generation-completed?requestId={request_id}&signature={signature}"
+    url = f"{APP_URL}/api/generation-completed?requestId={request_id}&signature={signature}"
     image_bytes.seek(0)
     response = requests.post(
         url=url,
@@ -88,7 +90,7 @@ def download_image(image_url: str) -> Image:
         if chunk:
             image_data.write(chunk)
             downloaded_size += len(chunk)
-            if downloaded_size > max_size:
+            if downloaded_size > MAX_SIZE:
                 raise Exception(f"Maximum download size exceeded!")
     
     print(downloaded_size)
@@ -97,7 +99,7 @@ def download_image(image_url: str) -> Image:
 
 
 def main():
-    r = redis.Redis(host="localhost", port=6379, decode_responses=True)
+    r = redis.Redis.from_url(url=REDIS_URL, decode_responses=True)
 
     while True:
         message = r.brpop("job-queue")

@@ -6,11 +6,11 @@ import crypto from "crypto";
 import { db } from "@/server/db";
 import { generation } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
+import { env } from "@/env";
 
-const ROOT_DIR = "/home/bgodley/git/illusion-site/app";
-const OUTPUT_FOLDER = path.join(ROOT_DIR, "output");
+const OUTPUT_FOLDER = env.OUTPUT_DIR;
 const MAX_SIZE = 1024 * 1024 * 3; // 3MB max size
-const SIGNATURE_KEY = "test";
+const SIGNATURE_KEY = env.JOB_RUNNER_SIGNATURE_KEY;
 
 const requestSchema = z.object({
   requestId: z.string().uuid(),

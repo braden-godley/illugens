@@ -3,14 +3,14 @@ import z from "zod";
 import path from "path";
 import fs from "fs";
 import sharp from "sharp";
+import { env } from "@/env";
 
 const requestSchema = z.object({
   requestId: z.string().uuid(),
   size: z.enum(["thumbnail", "full"]),
 });
 
-const ROOT_DIR = "/home/bgodley/git/illusion-site/app";
-const OUTPUT_FOLDER = path.join(ROOT_DIR, "output");
+const OUTPUT_FOLDER = env.OUTPUT_DIR;
 
 export default async function handler(
   req: NextApiRequest,

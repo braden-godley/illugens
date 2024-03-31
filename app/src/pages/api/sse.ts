@@ -1,3 +1,4 @@
+import { redisClient } from "@/server/redis";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "redis";
 import z from "zod";
@@ -29,9 +30,8 @@ export default async function handler(
 
   console.log("Got request with id", requestId);
 
-  const client = await createClient({
-    url: "redis://localhost:6379",
-  });
+  const client = await redisClient();
+
   client.connect();
 
   const channel = `job_progress:${requestId}`;

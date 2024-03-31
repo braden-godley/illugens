@@ -6,6 +6,7 @@ import fs from "fs";
 import { generation, generationStatus } from "@/server/db/schema";
 import { count, desc, eq } from "drizzle-orm";
 import { copiedTextStyle } from "fabric/fabric-impl";
+import { redisClient } from "@/server/redis";
 
 export const generationRouter = createTRPCRouter({
   runGeneration: publicProcedure
@@ -27,9 +28,7 @@ export const generationRouter = createTRPCRouter({
         control_image_data: imageData,
       };
 
-      const client = await createClient({
-        url: "redis://localhost:6379",
-      });
+      const client = await redisClient();
 
       await client.connect();
 
