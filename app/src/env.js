@@ -17,6 +17,8 @@ export const env = createEnv({
     REDIS_URL: z
       .string()
       .url(),
+    SMTP_SERVER_URL: z
+      .string(),
     OUTPUT_DIR: z
       .string(),
     JOB_RUNNER_SIGNATURE_KEY: z
@@ -53,6 +55,7 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     REDIS_URL: process.env.REDIS_URL,
+    SMTP_SERVER_URL: process.env.SMTP_SERVER_URL,
     OUTPUT_DIR: process.env.OUTPUT_DIR,
     JOB_RUNNER_SIGNATURE_KEY: process.env.JOB_RUNNER_SIGNATURE_KEY,
     NODE_ENV: process.env.NODE_ENV,

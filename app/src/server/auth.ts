@@ -6,11 +6,11 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-import DiscordProvider from "next-auth/providers/discord";
 
 import { env } from "@/env";
 import { db } from "@/server/db";
 import { createTable } from "@/server/db/schema";
+import Email from "next-auth/providers/email";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -49,7 +49,12 @@ export const authOptions: NextAuthOptions = {
     }),
   },
   adapter: DrizzleAdapter(db, createTable) as Adapter,
-  providers: []
+  providers: [
+    Email({
+      from: "Illusion Generator <noreply@illusiongenerator.com>",
+      server: env.SMTP_SERVER_URL,
+    })
+  ]
 };
 
 /**

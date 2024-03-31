@@ -16,6 +16,8 @@ services:
 
   mailhog:
     image: mailhog/mailhog:v1.0.1
+    ports:
+    - 8025:8025
     environment:
       MH_SMTP_BIND_ADDR: 0.0.0.0:587
 
