@@ -1,6 +1,7 @@
 import { api } from "@/utils/api";
 import { useState } from "react";
 import Pagination from "./Pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Gallery = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -36,6 +37,13 @@ const Gallery = () => {
             <p className="p-2">{generation.prompt}</p>
           </div>
         ))}
+        {galleryQuery.isLoading &&
+          Array.from(Array(8).keys()).map((_, i) => (
+            <div key={i} className="rounded-md border bg-white p-2 shadow-md">
+              <Skeleton className="mb-2 aspect-square w-full rounded-t-md" />
+              <Skeleton className="h-8 w-full" />
+            </div>
+          ))}
       </div>
     </div>
   );
