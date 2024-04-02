@@ -1,6 +1,6 @@
 import { api } from "@/utils/api";
 import { useEffect, useState } from "react";
-import ProgressBar from "./ProgressBar";
+import { Progress } from "./ui/progress";
 
 export default function ModelOutput({ requestId }: { requestId: string }) {
   const utils = api.useUtils();
@@ -30,7 +30,12 @@ export default function ModelOutput({ requestId }: { requestId: string }) {
   }, [requestId]);
 
   if (progress !== 1) {
-    return <ProgressBar progress={progress} />;
+    return (
+      <div className="flex h-full items-center justify-center flex-col gap-4">
+        <Progress value={progress * 100} />
+        <p>{progress !== 0 ? `${Math.floor(progress * 100)}%` : "Not started..."}</p>
+      </div>
+    );
   }
 
   return (
