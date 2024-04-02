@@ -1,5 +1,15 @@
 import { useMemo } from "react";
 
+import {
+  Pagination as PaginationShadcn,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
 const MAX_PAGES = 6;
 
 const Pagination = ({
@@ -42,48 +52,33 @@ const Pagination = ({
   }, [currentPage, numPages, MAX_PAGES]);
 
   return (
-    <div className="mt-2 flex items-baseline">
-      <button
-        className={`rounded-l-md border px-3 py-1 ${currentPage === 0 ? "bg-grey" : "bg-white"}`}
-        onClick={() => setCurrentPage((page) => Math.max(0, page - 1))}
-        disabled={currentPage === 0}
-        aria-label="Previous page"
-      >
-        &lt;
-      </button>
-      {pages.map((page) =>
-        typeof page === "number" ? (
-          <button
-            key={page}
-            className={`min-w-8 border-y border-r px-2 py-1 ${page === currentPage ? "bg-grey" : "bg-white"}`}
-            onClick={() => setCurrentPage(page)}
-            disabled={page === currentPage}
-            aria-label={`Go to page ${page + 1}`}
-          >
-            {page + 1}
-          </button>
-        ) : (
-          <button
-            key={page}
-            className={`bg-grey border-y border-r min-w-8 px-2 py-1`}
-            disabled={true}
-            aria-label={`Go to page ${page + 1}`}
-          >
-            ...
-          </button>
-        ),
-      )}
-      <button
-        className={`rounded-r-md border-y border-r px-3 py-1 ${currentPage === numPages - 1 ? "bg-grey" : "bg-white"}`}
-        onClick={() =>
-          setCurrentPage((page) => Math.min(numPages - 1, page + 1))
-        }
-        disabled={currentPage === numPages - 1}
-        aria-label="Next page"
-      >
-        &gt;
-      </button>
-    </div>
+    <PaginationShadcn>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            onClick={() => setCurrentPage((page) => Math.max(0, page - 1))}
+          />
+        </PaginationItem>
+        {pages.map((page) => (
+          <PaginationItem key={page}>
+            {typeof page === "string" ? (
+              <PaginationEllipsis />
+            ) : (
+              <PaginationLink onClick={() => setCurrentPage(page)} isActive={page === currentPage}>
+                {page + 1}
+              </PaginationLink>
+            )}
+          </PaginationItem>
+        ))}
+        <PaginationItem>
+          <PaginationNext
+            onClick={() =>
+              setCurrentPage((page) => Math.min(numPages - 1, page + 1))
+            }
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </PaginationShadcn>
   );
 };
 
