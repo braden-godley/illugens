@@ -6,6 +6,7 @@ import {
 } from "fabricjs-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useRef } from "react";
+import { Button } from "./ui/button";
 
 const CanvasEditor = ({
   setEditor,
@@ -56,6 +57,8 @@ const CanvasEditor = ({
       scaleY: 3,
     });
     editor?.canvas.add(text);
+
+    editor?.canvas.setActiveObject(text);
   };
 
   const addImage = () => {
@@ -96,19 +99,19 @@ const CanvasEditor = ({
         className="mx-auto aspect-square w-full border border-black"
         onReady={onReady}
       />
-      <div className="mt-2">
-        <button
+      <div className="mt-2 flex gap-2">
+        <Button
+          variant="outline"
           onClick={addText}
-          className="focus:shadow-outline mr-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
         >
           Add Text
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
           onClick={addImage}
-          className="focus:shadow-outline mr-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
         >
           Add Image
-        </button>
+        </Button>
         <input
           ref={uploadRef}
           type="file"
@@ -116,12 +119,11 @@ const CanvasEditor = ({
           className="hidden"
           onChange={onImageUploaded}
         />
-        <button
+        <Button
           onClick={onRunJob}
-          className="focus:shadow-outline rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700 focus:outline-none"
         >
           Submit
-        </button>
+        </Button>
       </div>
     </div>
   );

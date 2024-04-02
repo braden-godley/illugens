@@ -42,7 +42,7 @@ const Pagination = ({
   }, [currentPage, numPages, MAX_PAGES]);
 
   return (
-    <div className="mt-2 flex items-baseline gap-2">
+    <div className="mt-2 flex items-baseline">
       <button
         className={`rounded-l-md border px-3 py-1 ${currentPage === 0 ? "bg-grey" : "bg-white"}`}
         onClick={() => setCurrentPage((page) => Math.max(0, page - 1))}
@@ -55,7 +55,7 @@ const Pagination = ({
         typeof page === "number" ? (
           <button
             key={page}
-            className={`min-w-8 border px-2 py-1 ${page === currentPage ? "bg-grey" : "bg-white"}`}
+            className={`min-w-8 border-y border-r px-2 py-1 ${page === currentPage ? "bg-grey" : "bg-white"}`}
             onClick={() => setCurrentPage(page)}
             disabled={page === currentPage}
             aria-label={`Go to page ${page + 1}`}
@@ -65,7 +65,7 @@ const Pagination = ({
         ) : (
           <button
             key={page}
-            className={`bg-grey min-w-8 border px-2 py-1`}
+            className={`bg-grey border-y border-r min-w-8 px-2 py-1`}
             disabled={true}
             aria-label={`Go to page ${page + 1}`}
           >
@@ -74,7 +74,7 @@ const Pagination = ({
         ),
       )}
       <button
-        className={`rounded-r-md border px-3 py-1 ${currentPage === numPages - 1 ? "bg-grey" : "bg-white"}`}
+        className={`rounded-r-md border-y border-r px-3 py-1 ${currentPage === numPages - 1 ? "bg-grey" : "bg-white"}`}
         onClick={() =>
           setCurrentPage((page) => Math.min(numPages - 1, page + 1))
         }

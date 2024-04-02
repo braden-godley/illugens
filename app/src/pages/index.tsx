@@ -6,6 +6,7 @@ import ModelOutput from "@/components/ModelOutput";
 import { FabricJSEditor } from "fabricjs-react";
 import Gallery from "@/components/Gallery";
 import CanvasEditor from "@/components/CanvasEditor";
+import { Input } from "@/components/ui/input";
 
 export default function Home() {
   const [prompt, setPrompt] = useState<string>("bagel world");
@@ -43,7 +44,7 @@ export default function Home() {
         <meta name="description" content="Illusions At Your Fingertips" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="min-h-screen bg-gray-100">
+      <main className="min-h-screen bg-background text-foreground">
         <div className="container mx-auto p-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             <div>
@@ -57,10 +58,9 @@ export default function Home() {
                 >
                   Prompt:
                 </label>
-                <input
+                <Input
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
                   type="text"
                   name="prompt"
                   id="prompt"
