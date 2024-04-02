@@ -1,15 +1,12 @@
 import { z } from "zod";
-import { createClient } from "redis";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { v4 } from "uuid";
-import fs from "fs";
-import { generation, generationStatus } from "@/server/db/schema";
+import { generation } from "@/server/db/schema";
 import { count, desc, eq } from "drizzle-orm";
-import { copiedTextStyle } from "fabric/fabric-impl";
 import { redisClient } from "@/server/redis";
 
 export const generationRouter = createTRPCRouter({
-  runGeneration: publicProcedure
+  runGeneration: protectedProcedure
     .input(
       z.object({ prompt: z.string().trim().max(1024), imageData: z.string() }),
     )

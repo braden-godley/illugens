@@ -4,6 +4,7 @@ import {
   FabricJSEditor,
   useFabricJSEditor,
 } from "fabricjs-react";
+import { useSession } from "next-auth/react";
 import React, { useEffect, useRef } from "react";
 
 const CanvasEditor = ({
@@ -15,6 +16,7 @@ const CanvasEditor = ({
 }) => {
   const { editor, onReady } = useFabricJSEditor();
   const uploadRef = useRef<HTMLInputElement>(null);
+  const { data: session } = useSession();
 
   useEffect(() => {
     editor?.canvas.setBackgroundColor("#fff", () => null);
@@ -64,16 +66,12 @@ const CanvasEditor = ({
   const onImageUploaded = () => {
     const input = uploadRef.current;
     if (!input) return;
-    console.log("found input");
     const file = input?.files?.[0];
-    console.log(file);
     if (file) {
       const reader = new FileReader();
       reader.onload = function (e) {
-        console.log("read file");
         const img = new Image();
         img.onload = function () {
-          console.log("image loaded");
           const fabricImage = new fabric.Image(img);
           const baseWidth = 500;
           const width = fabricImage.width as number;
@@ -82,7 +80,6 @@ const CanvasEditor = ({
           editor?.canvas.add(fabricImage);
         };
         if (e.target?.result) {
-          console.log("e.target.result:", e.target.result);
           img.src = e.target.result as string;
         }
       };
@@ -91,7 +88,10 @@ const CanvasEditor = ({
   };
 
   return (
-    <div className="my-4">
+    <div className="my-4 relative">
+      <div className={`absolute z-10 top-0 bottom-0 left-0 right-0 bg-[rgb(0,0,0,.5)] flex items-center justify-center ${session === null ? "" : "hidden"}`}>
+        <p className="text-white text-2xl">Please sign in to generate images</p>
+      </div>
       <FabricJSCanvas
         className="mx-auto aspect-square w-full border border-black"
         onReady={onReady}
