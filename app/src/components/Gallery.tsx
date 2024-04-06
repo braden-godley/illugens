@@ -31,10 +31,11 @@ const Gallery = () => {
             className="rounded-md border bg-white shadow-md"
           >
             <img
-              className="aspect-square w-full rounded-t-md"
+              className="aspect-square w-full rounded-t-md mb-2"
               src={`/api/view-image?requestId=${generation.requestId}&size=thumbnail`}
             />
-            <p className="p-2">{generation.prompt}</p>
+            <p className="mx-2">{generation.prompt}</p>
+            <p className="mx-2 mb-2 text-muted-foreground text-sm">by {generation.createdBy}</p>
           </div>
         ))}
         {galleryQuery.isLoading &&

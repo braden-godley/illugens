@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { v4 } from "uuid";
-import { generation } from "@/server/db/schema";
+import { generation, users } from "@/server/db/schema";
 import { count, desc, eq } from "drizzle-orm";
 import { redisClient } from "@/server/redis";
 
@@ -17,6 +17,7 @@ export const generationRouter = createTRPCRouter({
         requestId,
         prompt,
         status: "pending",
+        createdBy: ctx.session.user.id,
       });
 
       const generationJobData = {
@@ -46,8 +47,13 @@ export const generationRouter = createTRPCRouter({
       const PAGE_SIZE = 8;
 
       const results = await ctx.db
-        .select()
+        .select({
+          requestId: generation.requestId,
+          prompt: generation.prompt,
+          createdBy: users.name,
+        })
         .from(generation)
+        .fullJoin(users, eq(generation.createdBy, users.id))
         .where(eq(generation.status, "completed"))
         .orderBy(desc(generation.id))
         .limit(PAGE_SIZE)

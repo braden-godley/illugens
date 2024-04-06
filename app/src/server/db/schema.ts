@@ -32,6 +32,10 @@ export const generation = createTable("generation", {
   requestId: uuid("requestId").notNull().unique(),
   prompt: varchar("prompt", { length: 1024 }).notNull().default(""),
   status: generationStatus("status").notNull(),
+  createdBy: varchar("createdBy", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdOn: timestamp("createdOn").default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const users = createTable("user", {
