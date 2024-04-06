@@ -11,9 +11,11 @@ const DefaultLayout: React.FC<PropsWithChildren<LayoutProps>> = ({ children, tit
     <>
       <Head>
         <title>{title}</title>
+        <meta name="description" content="Illusions At Your Fingertips" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>   
       <NavigationBar/>
-      <main>
+      <main className="min-h-screen bg-background text-foreground">
         {children}
       </main>
     </>

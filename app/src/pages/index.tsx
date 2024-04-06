@@ -7,6 +7,7 @@ import { FabricJSEditor } from "fabricjs-react";
 import Gallery from "@/components/Gallery";
 import CanvasEditor from "@/components/CanvasEditor";
 import { Input } from "@/components/ui/input";
+import DefaultLayout from "@/components/layout/default";
 
 export default function Home() {
   const [prompt, setPrompt] = useState<string>("bagel world");
@@ -38,46 +39,39 @@ export default function Home() {
   };
 
   return (
-    <>
-      <Head>
-        <title>Illusion Generator</title>
-        <meta name="description" content="Illusions At Your Fingertips" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="min-h-screen bg-background text-foreground">
-        <div className="container mx-auto p-8">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <div>
-              <h1 className="mb-6 text-4xl font-bold text-gray-800">
-                Generate an illusion
-              </h1>
-              <div className="mb-4">
-                <label
-                  htmlFor="prompt"
-                  className="mb-2 block text-sm font-bold text-gray-700"
-                >
-                  Prompt:
-                </label>
-                <Input
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  type="text"
-                  name="prompt"
-                  id="prompt"
-                />
-              </div>
-              <CanvasEditor
-                setEditor={(editor) => setEditor(editor)}
-                onRunJob={runJob}
+    <DefaultLayout title="Illusion Generator">
+      <div className="container mx-auto p-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          <div>
+            <h1 className="mb-6 text-4xl font-bold text-gray-800">
+              Generate an illusion
+            </h1>
+            <div className="mb-4">
+              <label
+                htmlFor="prompt"
+                className="mb-2 block text-sm font-bold text-gray-700"
+              >
+                Prompt:
+              </label>
+              <Input
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                type="text"
+                name="prompt"
+                id="prompt"
               />
             </div>
-            <div>
-              {requestId !== null && <ModelOutput requestId={requestId} />}
-            </div>
+            <CanvasEditor
+              setEditor={(editor) => setEditor(editor)}
+              onRunJob={runJob}
+            />
           </div>
-          <Gallery />
+          <div>
+            {requestId !== null && <ModelOutput requestId={requestId} />}
+          </div>
         </div>
-      </main>
-    </>
+        <Gallery />
+      </div>
+    </DefaultLayout>
   );
 }
