@@ -54,7 +54,11 @@ export const authOptions: NextAuthOptions = {
       from: "Illusion Generator <noreply@illusiongenerator.com>",
       server: env.SMTP_SERVER_URL,
     })
-  ]
+  ],
+  pages: {
+    signIn: "/login",
+    verifyRequest: "/verify-email"
+  }
 };
 
 /**

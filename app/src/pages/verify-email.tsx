@@ -7,14 +7,13 @@ import { getCsrfToken } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default function SignIn({
   csrfToken,
@@ -22,7 +21,7 @@ export default function SignIn({
   return (
     <>
       <Head>
-        <title>Login | Illusion Generator</title>
+        <title>Verify Email | Illusion Generator</title>
         <meta name="description" content="Illusions At Your Fingertips" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -31,27 +30,19 @@ export default function SignIn({
           <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
           <Card className="mx-auto w-full max-w-sm">
             <CardHeader>
-              <CardTitle className="text-2xl">Login</CardTitle>
+              <CardTitle className="text-2xl">Check your inbox</CardTitle>
               <CardDescription>
-                Enter your email below to login to your account.
+                A login link has been sent to your email. Please check your
+                inbox to access it and sign in.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="user@example.com"
-                  required
-                />
-              </div>
-            </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full">
-                Sign in
-              </Button>
+              <Link href="/login">
+                <Button variant="ghost">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to login
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         </form>

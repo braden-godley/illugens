@@ -7,6 +7,7 @@ import {
 import { useSession } from "next-auth/react";
 import React, { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 const CanvasEditor = ({
   setEditor,
@@ -92,8 +93,11 @@ const CanvasEditor = ({
 
   return (
     <div className="my-4 relative">
-      <div className={`absolute z-10 top-0 bottom-0 left-0 right-0 bg-[rgb(0,0,0,.5)] flex items-center justify-center ${session === null ? "" : "hidden"}`}>
+      <div className={`absolute z-10 top-0 bottom-0 left-0 right-0 bg-[rgb(0,0,0,.5)] flex flex-col gap-6 items-center justify-center ${session === null ? "" : "hidden"}`}>
         <p className="text-white text-2xl">Please sign in to generate images</p>
+        <Link href="/login">
+          <Button>Sign in</Button>
+        </Link>
       </div>
       <FabricJSCanvas
         className="mx-auto aspect-square w-full border border-black"
