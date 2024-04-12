@@ -1,9 +1,14 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { v4 } from "uuid";
 import { generation, users } from "@/server/db/schema";
 import { count, desc, eq } from "drizzle-orm";
 import { redisClient } from "@/server/redis";
+import { getTokens } from "./token";
 
 export const generationRouter = createTRPCRouter({
   runGeneration: protectedProcedure
@@ -11,6 +16,30 @@ export const generationRouter = createTRPCRouter({
       z.object({ prompt: z.string().trim().max(1024), imageData: z.string() }),
     )
     .mutation(async ({ ctx, input: { prompt, imageData } }) => {
+      const success = await ctx.db.transaction(async (tx) => {
+        const tokens = await getTokens(tx, ctx.session.user.id);
+        if (tokens === null || tokens < 1) {
+          await tx.rollback();
+          return false;
+        }
+
+        await tx
+          .update(users)
+          .set({
+            tokens: tokens - 1,
+          })
+          .where(eq(users.id, ctx.session.user.id));
+
+        return true;
+      });
+
+      if (!success) {
+        return {
+          success: false,
+          message: "You do not have enough tokens!",
+        };
+      }
+
       const requestId = v4();
 
       await ctx.db.insert(generation).values({
@@ -33,6 +62,7 @@ export const generationRouter = createTRPCRouter({
       await client.lPush("job-queue", JSON.stringify(generationJobData));
 
       return {
+        success: true,
         requestId,
       };
     }),

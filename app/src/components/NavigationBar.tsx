@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 import { signOut, useSession } from "next-auth/react";
+import { api } from "@/utils/api";
 
 const links: Array<{
   text: string;
@@ -25,6 +26,7 @@ const NavigationBar = () => {
   const { data: session } = useSession();
   const pathname = usePathname();
   const matching = links.findIndex((link) => link.pattern.test(pathname));
+  const tokensQuery = api.token.getTokens.useQuery();
   return (
     <nav className={cn("container mx-auto my-4 flex justify-between")}>
       <ul className="flex items-center space-x-4 lg:space-x-6">
@@ -41,10 +43,12 @@ const NavigationBar = () => {
           </Link>
         ))}
       </ul>
-      {session !== null && (
+      {session !== null && (<div className="flex items-center space-x-4 lg:space-x-6">
+        <p className="text-sm">Tokens: {tokensQuery.data}</p>
         <Button variant="ghost" size="sm" onClick={() => signOut()}>
           Sign out
         </Button>
+      </div>
       )}
     </nav>
   );

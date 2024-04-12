@@ -43,6 +43,13 @@
       "when": 1712392104256,
       "tag": "0005_condemned_ogun",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1712887082733,
+      "tag": "0006_awesome_felicia_hardy",
+      "breakpoints": true
     }
   ]
 }
