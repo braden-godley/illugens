@@ -6,7 +6,7 @@ import {
 } from "@/server/api/trpc";
 import { v4 } from "uuid";
 import { generation, users } from "@/server/db/schema";
-import { count, desc, eq } from "drizzle-orm";
+import { count, desc, eq, and } from "drizzle-orm";
 import { redisClient } from "@/server/redis";
 import { getTokens } from "./token";
 
@@ -16,6 +16,20 @@ export const generationRouter = createTRPCRouter({
       z.object({ prompt: z.string().trim().max(1024), imageData: z.string() }),
     )
     .mutation(async ({ ctx, input: { prompt, imageData } }) => {
+      const pendingGeneration = ctx.db.query.generation.findFirst({
+        where: and(
+          eq(generation.status, "pending"),
+          eq(generation.createdBy, ctx.session.user.id),
+        ),
+      });
+
+      if (pendingGeneration !== null) {
+        return {
+          success: false,
+          message: "You must wait until your current generation is finished."
+        }
+      }
+
       const success = await ctx.db.transaction(async (tx) => {
         const tokens = await getTokens(tx, ctx.session.user.id);
         if (tokens === null || tokens < 1) {
