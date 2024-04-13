@@ -9,6 +9,7 @@ import { generation, users } from "@/server/db/schema";
 import { count, desc, eq, and } from "drizzle-orm";
 import { redisClient } from "@/server/redis";
 import { getTokens } from "./token";
+import { TRPCError } from "@trpc/server";
 
 export const generationRouter = createTRPCRouter({
   runGeneration: protectedProcedure
@@ -16,18 +17,19 @@ export const generationRouter = createTRPCRouter({
       z.object({ prompt: z.string().trim().max(1024), imageData: z.string() }),
     )
     .mutation(async ({ ctx, input: { prompt, imageData } }) => {
-      const pendingGeneration = ctx.db.query.generation.findFirst({
+      const pendingGeneration = await ctx.db.query.generation.findFirst({
         where: and(
           eq(generation.status, "pending"),
           eq(generation.createdBy, ctx.session.user.id),
         ),
       });
 
-      if (pendingGeneration !== null) {
-        return {
-          success: false,
-          message: "You must wait until your current generation is finished."
-        }
+      if (pendingGeneration !== undefined) {
+        console.log(pendingGeneration);
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "You must wait for your current generation to finish first.",
+        });
       }
 
       const success = await ctx.db.transaction(async (tx) => {
@@ -48,10 +50,10 @@ export const generationRouter = createTRPCRouter({
       });
 
       if (!success) {
-        return {
-          success: false,
+        throw new TRPCError({
+          code: "FORBIDDEN",
           message: "You do not have enough tokens!",
-        };
+        });
       }
 
       const requestId = v4();
@@ -76,7 +78,6 @@ export const generationRouter = createTRPCRouter({
       await client.lPush("job-queue", JSON.stringify(generationJobData));
 
       return {
-        success: true,
         requestId,
       };
     }),

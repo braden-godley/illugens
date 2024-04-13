@@ -7,6 +7,7 @@ import { FabricJSEditor } from "fabricjs-react";
 import Gallery from "@/components/Gallery";
 import CanvasEditor from "@/components/CanvasEditor";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import DefaultLayout from "@/components/layout/default";
 
 export default function Home() {
@@ -16,10 +17,8 @@ export default function Home() {
   const utils = api.useUtils();
   const runJobMutation = api.generation.runGeneration.useMutation({
     onSuccess: (response) => {
-      if (response.success) {
-        setRequestId(response.requestId as string);
-        utils.token.getTokens.invalidate();
-      }
+      setRequestId(response.requestId as string);
+      utils.token.getTokens.invalidate();
     },
   });
 
@@ -69,6 +68,14 @@ export default function Home() {
               setEditor={(editor) => setEditor(editor)}
               onRunJob={runJob}
             />
+            {runJobMutation.error && (
+              <Alert variant="destructive">
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                  {runJobMutation.error.message}
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
           <div>
             {requestId !== null && <ModelOutput requestId={requestId} />}
