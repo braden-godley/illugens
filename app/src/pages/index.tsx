@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 import { api } from "@/utils/api";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import ModelOutput from "@/components/ModelOutput";
 import { FabricJSEditor } from "fabricjs-react";
 import Gallery from "@/components/Gallery";
@@ -13,9 +13,13 @@ export default function Home() {
   const [prompt, setPrompt] = useState<string>("bagel world");
   const [requestId, setRequestId] = useState<string | null>(null);
   const [editor, setEditor] = useState<FabricJSEditor | undefined>(undefined);
+  const utils = api.useUtils();
   const runJobMutation = api.generation.runGeneration.useMutation({
     onSuccess: (response) => {
-      setRequestId(response.requestId);
+      if (response.success) {
+        setRequestId(response.requestId as string);
+        utils.token.getTokens.invalidate();
+      }
     },
   });
 
