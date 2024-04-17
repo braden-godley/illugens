@@ -6,7 +6,7 @@ import {
 } from "@/server/api/trpc";
 import { v4 } from "uuid";
 import { generation, users } from "@/server/db/schema";
-import { count, desc, eq, and } from "drizzle-orm";
+import { count, desc, eq, and, gte, sql } from "drizzle-orm";
 import { redisClient } from "@/server/redis";
 import { getTokens } from "./token";
 import { TRPCError } from "@trpc/server";
@@ -21,6 +21,7 @@ export const generationRouter = createTRPCRouter({
         where: and(
           eq(generation.status, "pending"),
           eq(generation.createdBy, ctx.session.user.id),
+          gte(generation.createdOn, sql`current_timestamp - interval '1 minute'`)
         ),
       });
 
