@@ -7,7 +7,7 @@ import { env } from "@/env";
 
 const requestSchema = z.object({
   requestId: z.string().uuid(),
-  size: z.enum(["thumbnail", "full"]),
+  size: z.enum(["thumbnail", "full"]).default("full"),
 });
 
 const OUTPUT_FOLDER = env.OUTPUT_DIR;

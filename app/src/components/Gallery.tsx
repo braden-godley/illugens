@@ -2,6 +2,7 @@ import { api } from "@/utils/api";
 import { useState } from "react";
 import Pagination from "./Pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 const Gallery = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -26,16 +27,21 @@ const Gallery = () => {
       />
       <div className="mt-2 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {galleryQuery.data?.results.map((generation) => (
-          <div
+          <Link
             key={generation.requestId}
+            href={`/generation/${generation.requestId}`}
           >
-            <img
-              className="aspect-square w-full rounded-md mb-2"
-              src={`/api/view-image?requestId=${generation.requestId}&size=thumbnail`}
-            />
-            <p className="mx-2 font-bold">{generation.prompt}</p>
-            <p className="mx-2 mb-2 text-muted-foreground text-sm">by {generation.createdBy}</p>
-          </div>
+            <div>
+              <img
+                className="mb-2 aspect-square w-full rounded-md"
+                src={`/api/view-image?requestId=${generation.requestId}&size=thumbnail`}
+              />
+              <p className="mx-2 font-bold">{generation.prompt}</p>
+              <p className="mx-2 mb-2 text-sm text-muted-foreground">
+                by {generation.createdBy}
+              </p>
+            </div>
+          </Link>
         ))}
         {galleryQuery.isLoading &&
           Array.from(Array(8).keys()).map((_, i) => (
