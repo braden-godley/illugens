@@ -1,6 +1,8 @@
 import DefaultLayout from "@/components/layout/default";
 import { Button } from "@/components/ui/button";
+import { db } from "@/server/db";
 import { generation } from "@/server/db/schema";
+import { eq } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
@@ -9,6 +11,9 @@ import { z } from "zod";
 
 type GenerationData = {
   requestId: string;
+  createdBy: string;
+  prompt: string;
+  createdOn: string;
 };
 
 export default function ({
@@ -24,7 +29,7 @@ export default function ({
           <p className="mb-4">That generation can't be found.</p>
           <Link href="/">
             <Button variant="ghost">
-              <ArrowLeft className="text-sm mr-2" />
+              <ArrowLeft className="mr-2 text-sm" />
               Go home
             </Button>
           </Link>
@@ -38,10 +43,12 @@ export default function ({
       <div className="container mx-auto">
         <div className="grid grid-cols-12 gap-8">
           <div className="col-span-8">
-            <img src={`/api/view-image?requestId=${generation.requestId}`} />
+            <img className="rounded-md" src={`/api/view-image?requestId=${generation.requestId}`} />
           </div>
           <div className="col-span-4">
-            <p>Test</p>
+            <p className="font-bold text-2xl mb-2">{generation.prompt}</p>
+            <p className="text-muted-foreground mb-2">{generation.createdOn}</p>
+            <p>by {generation.createdBy}</p>
           </div>
         </div>
       </div>
@@ -60,10 +67,28 @@ export const getServerSideProps = (async (ctx) => {
 
   const requestId = ctx.query.id as string;
 
+  const gen = await db.query.generation.findFirst({
+    where: eq(generation.requestId, requestId),
+    with: {
+      user: true,
+    }
+  });
+
+  if (!gen) {
+    return {
+      props: {
+        generation: null,
+      },
+    };
+  }
+
   return {
     props: {
       generation: {
-        requestId,
+        requestId: gen.requestId,
+        createdBy: gen.user.name,
+        prompt: gen.prompt,
+        createdOn: gen.createdOn?.toISOString(),
       },
     },
   };

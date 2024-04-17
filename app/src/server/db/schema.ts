@@ -21,6 +21,17 @@ import {
  */
 export const createTable = pgTableCreator((name) => `app_${name}`);
 
+export const users = createTable("user", {
+  id: varchar("id", { length: 255 }).notNull().primaryKey(),
+  name: varchar("name", { length: 255 }),
+  email: varchar("email", { length: 255 }).notNull(),
+  emailVerified: timestamp("emailVerified", {
+    mode: "date",
+  }).default(sql`CURRENT_TIMESTAMP`),
+  image: varchar("image", { length: 255 }),
+  tokens: integer("tokens").notNull().default(0),
+});
+
 export const generationStatus = pgEnum("status", [
   "pending",
   "in_progress",
@@ -38,16 +49,9 @@ export const generation = createTable("generation", {
   createdOn: timestamp("createdOn").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const users = createTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }).notNull(),
-  emailVerified: timestamp("emailVerified", {
-    mode: "date",
-  }).default(sql`CURRENT_TIMESTAMP`),
-  image: varchar("image", { length: 255 }),
-  tokens: integer("tokens").notNull().default(0),
-});
+export const generationRelations = relations(generation, ({ one }) => ({
+  user: one(users, { fields: [generation.createdBy], references: [users.id] }),
+}));
 
 export const orders = createTable("order", {
   id: serial("id").primaryKey(),
