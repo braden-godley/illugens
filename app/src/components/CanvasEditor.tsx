@@ -100,7 +100,7 @@ const CanvasEditor = ({
         </Link>
       </div>
       <FabricJSCanvas
-        className="mx-auto aspect-square w-full border border-black"
+        className="mx-auto aspect-square w-full"
         onReady={onReady}
       />
       <div className="mt-2 flex gap-2">
