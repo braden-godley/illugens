@@ -26,7 +26,6 @@ export const generationRouter = createTRPCRouter({
       });
 
       if (pendingGeneration !== undefined) {
-        console.log(pendingGeneration);
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
           message: "You must wait for your current generation to finish first.",

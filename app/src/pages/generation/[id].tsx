@@ -6,8 +6,10 @@ import { eq } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { z } from "zod";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 type GenerationData = {
   requestId: string;
@@ -47,7 +49,7 @@ export default function ({
           </div>
           <div className="col-span-4">
             <p className="font-bold text-2xl mb-2">{generation.prompt}</p>
-            <p className="text-muted-foreground mb-2">{generation.createdOn}</p>
+            <p className="text-muted-foreground mb-2">{dayjs(generation.createdOn).fromNow()}</p>
             <p>by {generation.createdBy}</p>
           </div>
         </div>
