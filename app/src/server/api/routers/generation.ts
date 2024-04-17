@@ -35,7 +35,6 @@ export const generationRouter = createTRPCRouter({
       const success = await ctx.db.transaction(async (tx) => {
         const tokens = await getTokens(tx, ctx.session.user.id);
         if (tokens === null || tokens < 1) {
-          await tx.rollback();
           return false;
         }
 
