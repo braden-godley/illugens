@@ -2,6 +2,8 @@
 
 IlluGens is a website that allows users to generate Stable Diffusion images that have an illusion baked into them. Users can place text or images in a canvas which is then used as a "stencil" for the illusion that is generated.
 
+NOTE: Still in active development, eventually will be deployed as a SaaS-like website where users can purchase tokens and run generations with them.
+
 ## Running locally
 
 Note: You will need to have Docker and Docker Compose installed.
